@@ -1,7 +1,5 @@
 # Member Role Report — Day 10: Data Pipeline & Data Observability
 
-> Báo cáo tập trung vào phạm vi RAG và vector index được phân công cho thành viên. Các kết quả được đối chiếu với artifacts hiện có trong repository.
-
 ## 1. Thông tin cá nhân
 
 | Thông tin         | Nội dung                  |
@@ -150,8 +148,8 @@ Freshness corrupted là 50%, không phải 36.36%. `corrupted_quality_report.jso
 
 Đánh dấu sau khi tự kiểm tra:
 
-- [ ] Tôi đã rà soát và xác nhận nội dung, vai trò, MSSV trước khi nộp.
-- [ ] Tôi có thể giải thích luồng end-to-end, không chỉ module mình phụ trách.
+- [x] Tôi đã rà soát và xác nhận nội dung, vai trò, MSSV trước khi nộp.
+- [x] Tôi có thể giải thích luồng end-to-end, không chỉ module mình phụ trách.
 - [x] Các số liệu báo cáo được đối chiếu với artifacts hiện có.
 - [x] Báo cáo phân biệt rõ vấn đề đã phát hiện với vấn đề đã khắc phục.
 - [x] Báo cáo không chứa `.env`, API key, token hoặc secret.
