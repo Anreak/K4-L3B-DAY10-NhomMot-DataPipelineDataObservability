@@ -40,7 +40,7 @@
 
 Nêu một output cụ thể mà phần việc của bạn tạo ra hoặc giúp xác minh:
 
-File báo cáo so sánh `data/reports/corruption_report.md` cùng các file metrics (`baseline_metrics.json`, `corrupted_metrics.json`, `repaired_metrics.json`) chứng minh định lượng sự suy giảm từ 100% xuống 70% Hit Rate và phục hồi trọn vẹn về 100%.
+File báo cáo so sánh `data/reports/corruption_report.md` cùng các file metrics (`baseline_metrics.json`, `corrupted_metrics.json`, `repaired_metrics.json`) chứng minh định lượng sự suy giảm từ 100.00% xuống 60.00% Hit Rate và phục hồi trọn vẹn về 100.00%.
 
 ## 4. Giải thích phần kỹ thuật đã thực hiện
 
@@ -71,7 +71,7 @@ $env:PYTHONIOENCODING="utf-8"; $env:PYTHONPATH="src"; python script/run_corrupti
 ```
 
 - **Kết quả mong đợi:** Exit code 0, in ra console bảng so sánh 3 trạng thái, các file report markdown được tạo.
-- **Kết quả thực tế:** Cả 2 lệnh chạy thành công với exit code 0, Hit Rate phục hồi từ 70% về 100%, F1 phục hồi từ 0.6664 về 1.0000.
+- **Kết quả thực tế:** Cả 2 lệnh chạy thành công với exit code 0, Hit Rate phục hồi từ 60.00% về 100.00%, F1 phục hồi từ 0.0963 về 0.5235.
 - **Artifact/log:** `data/reports/phase1_report.md`, `data/reports/corruption_report.md`, `data/results/corruption_log.json`.
 
 ## 5. Một quyết định kỹ thuật quan trọng
@@ -82,7 +82,7 @@ $env:PYTHONIOENCODING="utf-8"; $env:PYTHONPATH="src"; python script/run_corrupti
   2. *Phương án B:* Kích hoạt Idempotent Repair tái tạo toàn bộ dữ liệu sạch từ Raw Data Snapshot bất biến ban đầu.
 - **Phương án đã chọn:** Phương án B (Idempotent Repair từ Raw Snapshot).
 - **Lý do:** Phương án A tiềm ẩn nguy cơ "sửa sai đè sai", không thể dự đoán hết các dạng lỗi bị tiêm và không đảm bảo tính toàn vẹn (Data Lineage). Phương án B tuân thủ nguyên lý Immutable Data Foundation: dữ liệu thô không bao giờ bị biến đổi, mọi biến đổi đều có thể tái lập và khôi phục 100% nguyên bản.
-- **Bằng chứng quyết định phù hợp:** Kết quả `repaired_metrics.json` đạt tuyệt đối 100.00% Hit Rate và 1.0000 Token F1, trùng khớp hoàn toàn với Baseline ban đầu.
+- **Bằng chứng quyết định phù hợp:** Kết quả `repaired_metrics.json` đạt tuyệt đối 100.00% Hit Rate và 0.5235 Token F1, trùng khớp hoàn toàn với Baseline ban đầu.
 
 ## 6. Một lỗi hoặc blocker đã xử lý
 
@@ -101,7 +101,7 @@ $env:PYTHONIOENCODING="utf-8"; $env:PYTHONPATH="src"; python script/run_corrupti
 2. **Evaluation set và ground-truth document IDs:** Bộ test gồm 10 câu hỏi với nhãn `ground_truth` và `ground_truth_doc_ids`. Khi câu hỏi được truy vấn, hệ thống đo xem tài liệu chứa ID chuẩn có nằm trong top_k kết quả trả về hay không (Hit Rate) và so sánh độ trùng lặp từ giữa câu trả lời với ground truth (Token F1).
 3. **Quality checks vs Freshness monitoring:** Quality checks kiểm soát tính toàn vẹn, duy nhất và hợp lệ về mặt cấu trúc dữ liệu (schema, not null, uniqueness, độ dài text). Freshness monitoring giám sát khía cạnh thời gian (temporal dimension), cảnh báo dữ liệu bị lỗi thời (stale data) khi bài báo quá hạn 180 ngày vượt tỉ lệ cho phép (>25%).
 4. **Vì sao dùng chung test set:** Để đảm bảo tính khách quan và khoa học của thực nghiệm đối chứng (Controlled Experiment). Khi giữ nguyên tập câu hỏi chuẩn, mọi sự biến thiên của chỉ số chỉ phản ánh duy nhất chất lượng của tập dữ liệu đang được phục vụ.
-5. **Tiêu chuẩn Repair thành công:** Dựa trên việc file `repaired_metrics.json` phục hồi các chỉ số (`retrieval_hit_rate` từ 70% lên 100%, `mean_token_f1` từ 0.6664 lên 1.0000) và `repaired_quality_report.json` đạt `gx_success = True`, `is_fresh = True`.
+5. **Tiêu chuẩn Repair thành công:** Dựa trên việc file `repaired_metrics.json` phục hồi các chỉ số (`retrieval_hit_rate` từ 60.00% lên 100.00%, `mean_token_f1` từ 0.0963 lên 0.5235) và `repaired_quality_report.json` đạt `gx_success = True`, `is_fresh = True`.
 
 ## 8. Phân tích kết quả
 
@@ -109,17 +109,17 @@ $env:PYTHONIOENCODING="utf-8"; $env:PYTHONPATH="src"; python script/run_corrupti
 
 | Metric/signal          | Baseline | Corrupted | Repaired | Nhận xét của cá nhân |
 | ---------------------- | -------: | --------: | -------: | ------------------------- |
-| `retrieval_hit_rate` |   100.00% |    70.00% |  100.00% | Bị sụt giảm 30% khi tiêm lỗi và phục hồi hoàn toàn sau repair |
-| `mean_token_f1`      |    1.0000 |    0.6664 |   1.0000 | Giảm mạnh do rỗng summary và nhiễu text; phục hồi tuyệt đối |
-| `judge_accuracy`     |   100.00% |    70.00% |  100.00% | Tỉ lệ câu trả lời đúng phục hồi tương ứng với Hit Rate |
-| `mean_judge_score`   |      5.00 |      3.40 |     5.00 | Điểm trung bình chất lượng câu trả lời lấy lại phong độ tối đa |
+| `retrieval_hit_rate` |   100.00% |    60.00% |  100.00% | Bị sụt giảm 40% khi tiêm lỗi và phục hồi hoàn toàn sau repair |
+| `mean_token_f1`      |    0.5235 |    0.0963 |   0.5235 | Giảm mạnh do rỗng summary và nhiễu text; phục hồi tuyệt đối |
+| `judge_accuracy`     |    50.00% |    10.00% |   50.00% | Tỉ lệ câu trả lời đúng phục hồi tương ứng với Hit Rate |
+| `mean_judge_score`   |      3.00 |      1.20 |     3.00 | Điểm trung bình chất lượng câu trả lời lấy lại phong độ tối đa |
 | Quality checks         |    Passed |    FAILED |   Passed | GX 1.x phát hiện chính xác vi phạm uniqueness và độ dài summary |
 | Freshness status       |     Fresh |     STALE |    Fresh | Tỉ lệ stale tăng lên 36.36% gây cảnh báo đỏ SLA |
 
 ### Kết luận từ số liệu
 
-1. **Chuỗi 1:** Tiêm lỗi (Drop 20% bài mới + Blank summary) ➔ GX 1.x phát hiện vi phạm độ dài summary và uniqueness ➔ Retrieval Hit Rate giảm từ 100% xuống 70%, Token F1 giảm từ 1.0000 xuống 0.6664.
-2. **Chuỗi 2:** Kích hoạt Idempotent Repair từ snapshot thô ban đầu ➔ GX 1.x và Freshness SLA báo xanh `Passed` ➔ Retrieval Hit Rate phục hồi từ 70% lên 100%, Token F1 phục hồi lên 1.0000.
+1. **Chuỗi 1:** Tiêm lỗi (Drop 20% bài mới + Blank summary) ➔ GX 1.x phát hiện vi phạm độ dài summary và uniqueness ➔ Retrieval Hit Rate giảm từ 100.00% xuống 60.00%, Token F1 giảm từ 0.5235 xuống 0.0963.
+2. **Chuỗi 2:** Kích hoạt Idempotent Repair từ snapshot thô ban đầu ➔ GX 1.x và Freshness SLA báo xanh `Passed` ➔ Retrieval Hit Rate phục hồi từ 60.00% lên 100.00%, Token F1 phục hồi lên 0.5235.
 
 Corruption ảnh hưởng rõ nhất là **Drop latest records** và **Blank summary** vì làm triệt tiêu hoàn toàn thông tin ngữ cảnh khiến retriever không tìm thấy tài liệu liên quan.
 

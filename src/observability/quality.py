@@ -77,6 +77,15 @@ def build_freshness_report(df: pd.DataFrame, settings: Settings, report_path: Pa
     return payload
 
 
+def evaluate_freshness_sla(
+    df: pd.DataFrame, settings: Settings, report_path: Path | None = None
+) -> dict[str, Any]:
+    """Danh gia Freshness SLA theo settings."""
+    target_path = report_path if report_path is not None else settings.paths.freshness_report
+    return build_freshness_report(df, settings, target_path)
+
+
+
 def run_data_quality_checks(df: pd.DataFrame, settings: Settings, report_name: str) -> dict[str, Any]:
     """Thiet lap Observability Gate: 4 Expectations (GX 1.x Ephemeral Context) + Freshness SLA.
 

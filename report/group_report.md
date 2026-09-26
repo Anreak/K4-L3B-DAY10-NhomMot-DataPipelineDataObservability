@@ -21,9 +21,9 @@
 
 ## 2. Tóm tắt kết quả
 
-Nhóm đã hoàn thành xuất sắc toàn bộ 6 checkpoint trọng tâm của bài thực chiến Data Pipeline & Data Observability. Trong giai đoạn Baseline, hệ thống đã thu thập 24 công trình nghiên cứu từ Crossref API, chuẩn hóa và trích xuất ngữ cảnh 5 phần, nạp vector embedding `all-MiniLM-L6-v2` vào ChromaDB (`papers-baseline`), vượt qua chốt kiểm định Great Expectations 1.x và Freshness SLA với chỉ số tuyệt đối: Retrieval Hit Rate 100% và Token F1 1.0000. 
+Nhóm đã hoàn thành xuất sắc toàn bộ 6 checkpoint trọng tâm của bài thực chiến Data Pipeline & Data Observability. Trong giai đoạn Baseline, hệ thống đã thu thập 24 công trình nghiên cứu từ Crossref API, chuẩn hóa và trích xuất ngữ cảnh 5 phần, nạp vector embedding `all-MiniLM-L6-v2` vào ChromaDB (`papers-baseline`), vượt qua chốt kiểm định Great Expectations 1.x và Freshness SLA với chỉ số: Retrieval Hit Rate 100.00% và Token F1 0.5235. 
 
-Trong giai đoạn kiểm thử độ bền (Phase 2), bộ công cụ Synthetic Corruption Suite đã tiêm 6 kịch bản lỗi thực tế (bỏ rơi 20% bài mới, làm rỗng tóm tắt, chèn ký tự rác, cắt ngắn tiêu đề, lùi ngày xuất bản và nhân đôi bản ghi). Thí nghiệm đã làm phát lộ hiện tượng **Silent Failure**: chương trình không crash nhưng Hit Rate sụt giảm còn 70.00% và Token F1 giảm còn 0.6664. Ngay lập tức, Data Quality Gate (GX 1.x) và Freshness SLA đã kích hoạt báo động vi phạm chất lượng dữ liệu. Nhóm đã kích hoạt thành công cơ chế **Idempotent Repair** từ nguồn lưu trữ thô ban đầu, khôi phục toàn vẹn dữ liệu và đưa các chỉ số RAG trở lại mức tối đa ban đầu (Hit Rate 100%, F1 1.0000).
+Trong giai đoạn kiểm thử độ bền (Phase 2), bộ công cụ Synthetic Corruption Suite đã tiêm 6 kịch bản lỗi thực tế (bỏ rơi 20% bài mới, làm rỗng tóm tắt, chèn ký tự rác, cắt ngắn tiêu đề, lùi ngày xuất bản và nhân đôi bản ghi). Thí nghiệm đã làm phát lộ hiện tượng **Silent Failure**: chương trình không crash nhưng Hit Rate sụt giảm còn 60.00% và Token F1 giảm còn 0.0963. Ngay lập tức, Data Quality Gate (GX 1.x) và Freshness SLA đã kích hoạt báo động vi phạm chất lượng dữ liệu. Nhóm đã kích hoạt thành công cơ chế **Idempotent Repair** từ nguồn lưu trữ thô ban đầu, khôi phục toàn vẹn dữ liệu và đưa các chỉ số RAG trở lại mức ban đầu (Hit Rate 100.00%, F1 0.5235).
 
 ## 3. Kiến trúc và luồng dữ liệu
 
@@ -92,8 +92,8 @@ python script/run_corruption_flow.py
 
 | Lệnh             | Trạng thái                                    | Thời điểm chạy gần nhất | Bằng chứng                         |
 | ----------------- | ----------------------------------------------- | ----------------------------- | ------------------------------------ |
-| Baseline pipeline | Thành công | 2026-09-26 11:37:25 | `data/reports/phase1_report.md` (Hit Rate: 100%, F1: 1.0000) |
-| Corruption flow   | Thành công | 2026-09-26 11:42:45 | `data/reports/corruption_report.md` (3 trạng thái) |
+| Baseline pipeline | Thành công | 2026-09-26 12:35:00 | `data/reports/phase1_report.md` (Hit Rate: 100.00%, F1: 0.5235) |
+| Corruption flow   | Thành công | 2026-09-26 12:38:25 | `data/reports/corruption_report.md` (3 trạng thái) |
 
 ## 5. Ingestion, cleaning và data contract
 
@@ -168,7 +168,7 @@ Việc cố định tập kiểm thử (Controlled Evaluation Benchmark) là ngu
 | Cleaned dataset          | `data/clean/`                        | Có | Đầy đủ `papers_clean.csv` & `papers_clean.json` (24 dòng) |
 | Embedding manifest/index | `data/embeddings/`                   | Có | Đầy đủ `papers_embeddings.json` |
 | Evaluation set           | `data/eval/`                         | Có | Đầy đủ `test_set.json` (10 câu hỏi) |
-| Baseline metrics         | `data/results/baseline_metrics.json` | Có | Hit Rate: 100%, F1: 1.0000 |
+| Baseline metrics         | `data/results/baseline_metrics.json` | Có | Hit Rate: 100.00%, F1: 0.5235 |
 | Quality/freshness        | `data/quality/`                      | Có | Đầy đủ GX report và `freshness_report.json` |
 | Baseline report          | `data/reports/phase1_report.md`      | Có | Báo cáo Markdown chi tiết Pha 1 |
 
@@ -177,9 +177,9 @@ Việc cố định tập kiểm thử (Controlled Evaluation Benchmark) là ngu
 | Metric                 |       Giá trị | Diễn giải                             |
 | ---------------------- | --------------: | --------------------------------------- |
 | `retrieval_hit_rate` |        100.00% | 10/10 câu hỏi truy xuất chính xác tài liệu chứa ground truth trong Top-4 |
-| `mean_token_f1`      |         1.0000 | Trích xuất câu trả lời chuẩn xác tuyệt đối theo ground truth |
-| `judge_accuracy`     |        100.00% | 100% câu trả lời được đánh giá đúng về mặt nghiệp vụ |
-| `mean_judge_score`   |           5.00 | Điểm trung bình chất lượng câu trả lời đạt mức tối đa 5/5 |
+| `mean_token_f1`      |         0.5235 | Trích xuất câu trả lời chuẩn xác theo ground truth |
+| `judge_accuracy`     |         50.00% | Tỉ lệ câu trả lời khớp chính xác tiêu chí nghiệp vụ |
+| `mean_judge_score`   |         3.00 / 5 | Điểm trung bình chất lượng câu trả lời đạt mức 3.00/5 |
 | Ragas, nếu có        |            N/A | Tùy chọn tăng cường (mặc định tắt để tối ưu thời gian thực thi) |
 
 ## 8. Data quality và freshness
@@ -209,7 +209,7 @@ Việc cố định tập kiểm thử (Controlled Evaluation Benchmark) là ngu
 
 | Corruption         | Cách tạo | Record bị tác động | Quality signal kỳ vọng | Tác động thực tế | Cách repair   |
 | ------------------ | ---------- | ---------------------: | ------------------------ | --------------------- | -------------- |
-| Drop latest records | Bỏ rơi 20% bài báo mới nhất theo ngày xuất bản | 4 | Row count giảm | Hit Rate sụt giảm 30% | Nạp lại đầy đủ từ raw snapshot |
+| Drop latest records | Bỏ rơi 20% bài báo mới nhất theo ngày xuất bản | 4 | Row count giảm | Hit Rate sụt giảm 40% | Nạp lại đầy đủ từ raw snapshot |
 | Blank summary | Xóa rỗng trường tóm tắt (`summary = ""`) | 2 | Vi phạm độ dài summary < 30 | Token F1 sụt giảm nghiêm trọng | Khôi phục lại abstract sạch từ raw |
 | Inject noise | Chèn chuỗi ký tự rác vào tóm tắt | 2 | Nhiễu loạn ngữ nghĩa | Token F1 giảm | Khôi phục lại text gốc |
 | Truncate title | Cắt ngắn tiêu đề xuống còn 5 ký tự | 2 | Khó tra cứu theo title | Giảm khả năng exact lookup | Tái tạo lại tiêu đề đầy đủ |
@@ -230,17 +230,17 @@ Hàm `repair_from_raw_snapshot` kích hoạt nguyên lý Idempotent Pipeline: th
 
 | Metric/signal            | Baseline | Corrupted | Repaired | Thay đổi do corruption | Mức phục hồi | Nhận xét   |
 | ------------------------ | -------: | --------: | -------: | -----------------------: | --------------: | ------------ |
-| `retrieval_hit_rate`   |  100.00% |    70.00% |  100.00% |                  -30.00% |         +30.00% | Bị sụt giảm mạnh khi drop tài liệu và phục hồi hoàn toàn |
-| `mean_token_f1`        |   1.0000 |    0.6664 |   1.0000 |                  -0.3336 |         +0.3336 | Do blank summary và noise; phục hồi trọn vẹn |
-| `judge_accuracy`       |  100.00% |    70.00% |  100.00% |                  -30.00% |         +30.00% | Phục hồi hoàn hảo sau khi re-index dữ liệu sạch |
-| `mean_judge_score`     |     5.00 |      3.40 |     5.00 |                    -1.60 |           +1.60 | Điểm số trung bình quay lại mức tuyệt đối 5/5 |
+| `retrieval_hit_rate`   |  100.00% |    60.00% |  100.00% |                  -40.00% |         +40.00% | Bị sụt giảm mạnh khi drop tài liệu và phục hồi hoàn toàn |
+| `mean_token_f1`        |   0.5235 |    0.0963 |   0.5235 |                  -0.4272 |         +0.4272 | Do blank summary và noise; phục hồi trọn vẹn |
+| `judge_accuracy`       |   50.00% |    10.00% |   50.00% |                  -40.00% |         +40.00% | Phục hồi hoàn hảo sau khi re-index dữ liệu sạch |
+| `mean_judge_score`     |     3.00 |      1.20 |     3.00 |                    -1.80 |           +1.80 | Điểm số trung bình quay lại mức ban đầu 3.00/5 |
 | Quality checks pass/fail |   Passed |    FAILED |   Passed | Vi phạm tính duy nhất & độ dài | 100% Khôi phục | GX 1.x báo động chính xác |
 | Freshness status         |    Fresh |     STALE |    Fresh | Tăng tỉ lệ quá hạn lên 36.36% | 100% Khôi phục | SLA chuyển về mức an toàn (4.17%) |
 
 Nêu ít nhất hai kết luận có quan hệ nhân quả được hỗ trợ bởi artifacts:
 
-1. **Nhân quả 1 (Corruption ➔ Observability ➔ RAG Degradation):** Khi tiêm lỗi làm rỗng summary và bỏ rơi 20% bài báo mới nhất, GX 1.x phát hiện vi phạm độ dài (`expect_column_value_lengths_to_be_between` thất bại) và Freshness SLA kích hoạt cảnh báo STALE (36.36% > 25%). Đồng thời, Retrieval Hit Rate sụt giảm từ 100% xuống 70% và Token F1 giảm từ 1.0000 xuống 0.6664.
-2. **Nhân quả 2 (Idempotent Repair ➔ Observability Recovery ➔ RAG Restoration):** Khi kích hoạt quy trình phục hồi từ snapshot thô, tất cả 6 Expectations của GX 1.x đạt trạng thái `Passed`, Freshness SLA trở về mức `Fresh` (4.17% quá hạn), kéo theo sự phục hồi hoàn toàn của Retrieval Hit Rate lên 100% và Token F1 lên 1.0000.
+1. **Nhân quả 1 (Corruption ➔ Observability ➔ RAG Degradation):** Khi tiêm lỗi làm rỗng summary và bỏ rơi 20% bài báo mới nhất, GX 1.x phát hiện vi phạm độ dài (`expect_column_value_lengths_to_be_between` thất bại) và Freshness SLA kích hoạt cảnh báo STALE (36.36% > 25%). Đồng thời, Retrieval Hit Rate sụt giảm từ 100.00% xuống 60.00% và Token F1 giảm từ 0.5235 xuống 0.0963.
+2. **Nhân quả 2 (Idempotent Repair ➔ Observability Recovery ➔ RAG Restoration):** Khi kích hoạt quy trình phục hồi từ snapshot thô, tất cả 6 Expectations của GX 1.x đạt trạng thái `Passed`, Freshness SLA trở về mức `Fresh` (4.17% quá hạn), kéo theo sự phục hồi hoàn toàn của Retrieval Hit Rate lên 100.00% và Token F1 lên 0.5235.
 
 ## 11. Vấn đề tích hợp quan trọng
 
